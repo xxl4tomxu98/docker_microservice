@@ -1,6 +1,5 @@
+# Base
 
-## Stage 1 (production base)
-# This gets our prod dependencies installed and out of the way
 FROM node:12-alpine as base
 
 EXPOSE 8081
@@ -16,9 +15,8 @@ RUN npm ci && npm cache clean --force
 ENV PATH=/app/node_modules/.bin:$PATH
 
 
-## Stage 2 (development)
-# we don't COPY in this stage because for dev you'll bind-mount anyway
-# this saves time when building locally for dev via docker-compose
+# Development
+
 FROM base as dev
 
 ENV NODE_ENV=development
@@ -30,9 +28,8 @@ RUN npm install --only=development
 CMD ["nodemon", "./app.js"]
 
 
-## Stage 3 (production)
-# This gets our source code into builder
-# this stage starts from the first one and skips dev
+# Production
+
 FROM base as prod
 
 WORKDIR /app
