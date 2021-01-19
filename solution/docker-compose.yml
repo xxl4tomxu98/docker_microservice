@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   catalog-management:
-    build: 
+    build:
       context: ./backend/catalog-management
       target: dev
     ports:
@@ -15,7 +15,7 @@ services:
       - PORT=${BACKEND_CATALOG_MANAGEMENT_PORT}
 
   customer-support:
-    build: 
+    build:
       context: ./backend/customer-support
       target: dev
     ports:
@@ -36,7 +36,7 @@ services:
     depends_on:
       - customer-support-db
     command: ./wait-for customer-support-db:5432 -- npm run db-migrate-seed
-  
+
   customer-support-db:
     image: postgres:12.3
     environment:
@@ -49,7 +49,7 @@ services:
       - customer-support-db-data:/var/lib/postgresql/data
 
   order-processing:
-    build: 
+    build:
       context: ./backend/order-processing
       target: dev
     networks:
@@ -67,7 +67,7 @@ services:
     depends_on:
       - order-processing-db
     command: ./wait-for order-processing-db:5432 -- npm run db-migrate-seed
-  
+
   order-processing-db:
     image: postgres:12.3
     environment:
