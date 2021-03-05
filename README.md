@@ -48,123 +48,12 @@ Each microservice and the client-side UI contains just the bare minimum of funct
 
 To get the non-Docker version of the application up and running within your local development environment, all of the following steps need to be completed:
 
-Note: If you're following along, be sure to complete these steps to the version of the application contained within the starter folder!
-
-Add .env files to the backend/customer-support, backend/order-processing, and frontend folders (based upon the available .env.example files within each of those folders).
-
-Create the customer_support and order_processing databases as well as their respective users customer_support_app and order_processing_app using the following SQL statements:
-
-```sql
-create database customer_support;
-create user customer_support_app with encrypted password '«the customer_support_app user password»';
-grant all privileges on database customer_support to customer_support_app;
-create database order_processing;
-create user order_processing_app with encrypted password '«the order_processing_app user password»';
-grant all privileges on database order_processing to order_processing_app;
-```
-
-In the backend/catalog-management folder, install the sub-project's dependencies by running the command ```npm install``` and run the command ```npm start``` to start the application.
-
-In the backend/customer-support folder, install the sub-project's dependencies by running the command ```npm install```, apply the Sequelize migrations and seed data by running the commands ```npx dotenv sequelize db:migrate``` and ```npx dotenv sequelize db:seed:all```, and run the command ```npm start``` to start the application.
-
-In the backend/order-processing folder, install the sub-project's dependencies by running the command ```npm install```, apply the Sequelize migrations and seed data by running the commands ```npx dotenv sequelize db:migrate``` and ```npx dotenv sequelize db:seed:all```, and run the command ```npm start``` to start the application.
-
-In the frontend folder, install the sub-project's dependencies by running the command ```npm install``` and run the command ```npm start``` to start the application.
-
-Whew! And these instructions assume that you have the correct versions of Node, npm, and PostgreSQL installed on your system!
-
-After completing the above steps, you'll have four terminal windows open:
-
-![microservices-without-docker]
-
-Now you can browse to `http://localhost:3000/` to view the client-side UI:
-
-![microservices-online-ordering-application-ui]
-
-[microservices-without-docker]: https://appacademy-open-assets.s3-us-west-1.amazonaws.com/Modular-Curriculum/content/microservices/topics/design/assets/microservices-without-docker.png
-
-[microservices-online-ordering-application-ui]: https://appacademy-open-assets.s3-us-west-1.amazonaws.com/Modular-Curriculum/content/microservices/topics/design/assets/microservices-online-ordering-application-ui.png
+Note: Be sure to complete these steps of the README of the application contained within the starter folder!
 
 As mentioned earlier, the React client-side UI uses the Fetch API to make calls to the microservice Node/Express API endpoints. The list of products list supplied by the Catalog Management microservice (backend/catalog-management) and the list of customers is supplied by the Customer Support microservice (backend/customer-support). The Customer Support microservice uses the Order Processing microservice (backend/order-processing) to retrieve each customer's list of orders.
 
 ## Running the application with Docker
-To get the Dockerized version of the application up and running within your local development environment, complete the following steps:
-
-Note: If you're following along, be sure to complete these steps to the version of the application contained within the solution folder!
-
-Run the command ```docker-compose up```.
-That's it... one command (assuming that you have a recent version of Docker Desktop installed on your system)!
-
-After each of the Docker images are created, you'll see the following output in the terminal indicating that the containers have been created:
-
-```shell
-Creating microservices-with-docker_customer-support-db_1 ... done
-Creating microservices-with-docker_order-processing-db_1 ... done
-Creating microservices-with-docker_catalog-management_1  ... done
-Creating microservices-with-docker_order-processing_1    ... done
-Creating microservices-with-docker_customer-support_1    ... done
-Creating microservices-with-docker_frontend_1            ... done
-```
-
-After that, each container will generate output as it starts up. Eventually, the frontend_1 container will generate the following output:
-
-``` shell
-frontend_1             |
-frontend_1             | > frontend@0.1.0 start /app
-frontend_1             | > react-scripts start
-frontend_1             |
-frontend_1             | ℹ ｢wds｣: Project is running at http://172.31.0.5/
-frontend_1             | ℹ ｢wds｣: webpack output is served from
-frontend_1             | ℹ ｢wds｣: Content not from webpack is served from /app/public
-frontend_1             | ℹ ｢wds｣: 404s will fallback to /
-frontend_1             | Starting the development server...
-frontend_1             |
-frontend_1             | Compiled successfully!
-frontend_1             |
-frontend_1             | You can now view frontend in the browser.
-frontend_1             |
-frontend_1             |   Local:            http://localhost:3000
-frontend_1             |   On Your Network:  http://172.31.0.5:3000
-frontend_1             |
-frontend_1             | Note that the development build is not optimized.
-frontend_1             | To create a production build, use npm run build.
-frontend_1             |
-```
-
-This output should look familiar, as it's generated by the Create React App tooling. Once you see that output, you can browse to http://localhost:3000/ to view the client-side UI.
-
-Be aware that the first time you run this command, Docker will likely need to download some (or all) of the official base images used by the application. Given that, depending on your connection speed, it might take some time to create images for the application's containers.
-
-At this point, you can make a change to any of the frontend or backend code files and the appropriate app will detect the change and restart its process. If you make a change to the React frontend, the browser will automatically reflect your change (thanks to the Create React App tooling). If you change one of the backend APIs, you'll need to perform an action to force the API endpoint to be called again (for this example just refresh/reload the entire page).
-
-To exit the docker-compose up command, press CTRL+C. You'll see output confirming that Compose stopped each of the application's contaiers:
-
-``` shell
-Stopping microservices-with-docker_frontend_1            ... done
-Stopping microservices-with-docker_customer-support_1    ... done
-Stopping microservices-with-docker_order-processing_1    ... done
-Stopping microservices-with-docker_order-processing-db_1 ... done
-Stopping microservices-with-docker_catalog-management_1  ... done
-Stopping microservices-with-docker_customer-support-db_1 ... done
-```
-
-Then you can optionally run the ```docker-compose down``` command to delete the application's containers and networks:
-
-``` shell
-Removing microservices-with-docker_frontend_1            ... done
-Removing microservices-with-docker_customer-support_1    ... done
-Removing microservices-with-docker_order-processing_1    ... done
-Removing microservices-with-docker_order-processing-db_1 ... done
-Removing microservices-with-docker_catalog-management_1  ... done
-Removing microservices-with-docker_customer-support-db_1 ... done
-Removing network microservices-with-docker_default
-Removing network microservices-with-docker_customer-support
-Removing network microservices-with-docker_order-processing
-```
-
-To restart the application, run the docker-compose up command again.
-
-If you change anything in a Dockerfile or the docker-compose.yml file, you'll need to run the command docker-compose build or docker-compose up --build to update the affected image(s).
+To get the Dockerized version of the application up and running within your local development environment, complete the the steps in the dockerized folder README.md file:
 
 ## Why use Docker with microservices?
 Without Docker, manually completing all of the required setup to get the application up and running in your local development is time consuming and prone to errors. Consider also, that the example application is relatively small. Can you imagine having to perform all of those steps for an application that had dozens of microservices?
@@ -247,11 +136,11 @@ In the above Dockerfile, multi-stage builds are used so that a single Dockerfile
 
 In the base image, the FROM command is used to specify the node:12-alpine image as the starting point. The EXPOSE command is used to document that the Express application will be listening on port 8081. Later in the docker-compose.yml file, you'll publish that port so that the React client-side UI can access the microservice API.
 
-The working directory is set to /app with the WORKDIR command. Then the package.json and package-lock.json files are copied into the image using the COPY command and the RUN command is used to install the project's dependencies using the npm ci command. Using the ENV command to set the NODE_ENV environment variable keeps the npm ci command from installing any of the project's development dependencies. To keep the base image as lean as possible, the npm cache is cleared with the npm cache clean --force command.
+The working directory is set to /app with the WORKDIR command. Then the package.json and package-lock.json files are copied into the image using the COPY command and the RUN command is used to install the project's dependencies using the npm ci command. Using the ENV command to set the NODE_ENV environment variable keeps the npm ci command from installing any of the project's development dependencies. To keep the base image as lean as possible, the npm cache is cleared with the ```npm cache clean --force``` command.
 
 The ENV command is used to add the node_modules/.bin folder to the path so that commands like nodemon can be executed without having to provide the path to the node_modules/.bin folder.
 
-In the dev image, the ENV command is used to set the NODE_ENV environment variable to development which configures Express to be optimized for a development environment. After using the WORKDIR command to set the working directory to /app, the RUN command is used to install the project's development dependencies by passing the --only=development flag to the npm install command. Development dependencies aren't needed in production, so installing them only in the dev image keeps them out of the prod image.
+In the dev image, the ENV command is used to set the NODE_ENV environment variable to development which configures Express to be optimized for a development environment. After using the WORKDIR command to set the working directory to /app, the RUN command is used to install the project's development dependencies by passing the ```--only=development``` flag to the ```npm install``` command. Development dependencies aren't needed in production, so installing them only in the dev image keeps them out of the prod image.
 
 Then CMD command is used to start the application using nodemon so that changes to code files will restart the Node process running in the container. Notice that the project's files aren't copied into the image. That's intentional as a bind mount will be configured in the docker-compose.yml file so that you can edit code directly on your host system.
 
@@ -299,7 +188,7 @@ The volumes option is used to define a bind mount and an anonymous volume. When 
 
 Later in this article, you'll see an example of how to create a persistent named volume using the top-level volumes option.
 
-The string ./backend/catalog-management:/app:delegated bind mounts the path ./backend/catalog-management on the host system to the path /app in the container. Creating a bind mount makes the files (and subfolders) contained with the supplied host path (./backend/catalog-management) available within the supplied container path (/app) without having to physically copying the files into the container. This gives you the ability to edit the contents of a file on the host system (using the editor of your choice) and the file will also be updated in the container (since the host and container are referencing the same file). Remember that the CMD command was used in the service's Dockerfile to start the application using nodemon, so changes to code files will restart the Node process running in the container.
+The string ```./backend/catalog-management:/app:```delegated bind mounts the path ```./backend/catalog-management``` on the host system to the path /app in the container. Creating a bind mount makes the files (and subfolders) contained with the supplied host path (./backend/catalog-management) available within the supplied container path (/app) without having to physically copying the files into the container. This gives you the ability to edit the contents of a file on the host system (using the editor of your choice) and the file will also be updated in the container (since the host and container are referencing the same file). Remember that the CMD command was used in the service's Dockerfile to start the application using nodemon, so changes to code files will restart the Node process running in the container.
 
 The delegated flag supplied after the container path /app in the bound mount configuration, is specified to ensure the optimal performance when using Docker Desktop for Mac. For more information, see the Performance Tuning for Volume Mounts article on the Docker website.
 
@@ -312,13 +201,13 @@ To test the service, run the command docker-compose up. Compose will load the co
 
 ### First, Compose creates the default network:
 
-Creating network "<base folder name>_default" with the default driver
+- Creating network "<base folder name>_default" with the default driver
 Next, you'll see that Compose begins the process of building the image for the catalog-management service (using the Dockerfile specified in the docker-compose.yml file):
 
-Building catalog-management
+- Building catalog-management
 After the image is created, Compose will create the container for the catalog-management service:
 
-Creating <base folder name>_catalog-management_1 ... done
+- Creating <base folder name>_catalog-management_1 ... done
 When the container has finished starting up, you'll see the following output:
 
 ``` shell
@@ -348,20 +237,26 @@ If you don't want to see the output from the application(s) displayed in the ter
 
 After the command has completed, you can view the containers by running the command docker-compose ps:
 
+``` shell
             Name                          Command               State           Ports
 ----------------------------------------------------------------------------------------------
 <base folder name>_catalog-management_1   docker-entrypoint.sh nodem ...   Up      0.0.0.0:8081->8081/tcp
-
+```
 You can view the networks and volumes on your system by respectively running the commands ```docker network ls``` and ```docker volume ls```.
 
 Running the command ```docker-compose stop``` will stop the application's running containers:
 
+``` shell
 Stopping scratch_catalog-management_1 ... done
+```
+
 Running the command docker-compose ps again will show you the stopped containers:
 
+``` shell
             Name                          Command                State     Ports
 --------------------------------------------------------------------------------
 <base folder name>_catalog-management_1   docker-entrypoint.sh nodem ...   Exit 143
+```
 
 Restarting the application after making a configuration change
 After making a change to a Dockerfile or the docker-compose.yml file, you can simply re-run the ```docker-compose up --build``` command without first running ```docker-compose down```. Compose will determine which containers need to be stopped and recreated.
@@ -371,8 +266,11 @@ If a new project dependency is installed using npm install, you'll need to run t
 ## Cleaning up
 To stop and remove your application's containers and networks (created by the command docker-compose up), run the command ```docker-compose down```:
 
+``` shell
 Removing <base folder name>_catalog-management_1 ... done
 Removing network <base folder name>_default
+```
+
 By default, when running the docker-compose down command, volumes (named or anonymous) are not removed. To remove any volumes attached to your application's containers (named or anonymous) include the -v flag:
 
 ``` shell
@@ -391,13 +289,15 @@ If you run the command docker-compose down and forget to include the -v flag and
 
 Running the command ```docker volume ls``` will display the volumes on your system. Anonymous volumes are volumes that don't have a human readable name:
 
+``` shell
 DRIVER              VOLUME NAME
 local               6b6c626c6cabbffa0373b64f58dd662aacce9f9f1db885d3de36f8b70a1f6a81
 local               2464d1b5136e89304c9e61bb338c044ff0a2303db1767081219d5d8ee59ae959
 local               ee57187dc765f86f8c1f5decd2f06e842838f50266805a07aef5cca5c05c51d4
+```
 
 To free up disk space on your system, you can run the command ```docker volume prune``` to remove all local volumes not used by at least one container:
-
+``` shell
 WARNING! This will remove all local volumes not used by at least one container.
 Are you sure you want to continue? [y/N] y
 Deleted Volumes:
@@ -406,14 +306,19 @@ Deleted Volumes:
 ee57187dc765f86f8c1f5decd2f06e842838f50266805a07aef5cca5c05c51d4
 
 Total reclaimed space: 88.85MB
-Avoiding hard-coded configuration values
+```
+
+## Avoiding hard-coded configuration values
 The catalog-management service is currently configured to be published to port 8081, but what is port 8081 was already in use on your system? Luckily, the Node/Express application is written to respect the PORT environment variable (if it's set):
 
+``` shell
 // ./backend/catalog-management/app.js
 
 // Code removed for brevity.
 
 const port = process.env.PORT || 8081;
+```
+
 This allows you to reconfigure the service's port by setting the PORT environment variable in the docker-compose.yml file:
 
 ``` yml
@@ -474,16 +379,17 @@ BACKEND_CATALOG_MANAGEMENT_PORT=8081
 ```
 
 Now Compose will use your project name for the Docker item prefix:
-
+``` shell
 Creating network "online-catalog-app_default" with the default driver
 Building catalog-management
 ...
 Creating online-catalog-app_catalog-management_1 ... done
 Attaching to online-catalog-app_catalog-management_1
-Configuring the second microservice API
+```
+## Configuring the second microservice API
 Next, you'll configure the order-processing microservice API. This service uses a PostgreSQL database for data persistence, so you'll actually start with configuring the order-processing-db service.
 
-Adding a database service
+### Adding a database service
 To configure the order-processing-db service, add the following content to the docker-compose.yml file:
 
 ``` yml
@@ -518,7 +424,7 @@ BACKEND_ORDER_PROCESSING_DB_PASSWORD=«a strong password for the order_processin
 BACKEND_ORDER_PROCESSING_DB_DATABASE=order_processing
 ```
 
-## Configuring the service
+### Configuring the service
 In the backend/order-processing folder, add a file named Dockerfile containing the following content:
 
 ``` Dockerfile
