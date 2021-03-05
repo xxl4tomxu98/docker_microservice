@@ -37,11 +37,14 @@ After cloning the project repo, you'll have two copies of the application: *the 
 
 The project structure for both versions of the application looks like this:
 
+``` shell
 ├── backend
 │   ├── catalog-management
 │   ├── customer-support
 │   └── order-processing
 └── frontend
+```
+
 Each of the folders within the backend folder, catalog-management, customer-support, and order-processing, contains a microservice Node/Express API application for the capability described by its folder name. The frontend folder contains the client-side UI React application (created by the Create React App tooling).
 
 Each microservice and the client-side UI contains just the bare minimum of functionality to demonstrate that part of the application. The example application doesn't include the User Authentication service to keep things as simple as possible.
@@ -138,7 +141,7 @@ In the base image, the FROM command is used to specify the node:12-alpine image 
 
 The working directory is set to /app with the WORKDIR command. Then the package.json and package-lock.json files are copied into the image using the COPY command and the RUN command is used to install the project's dependencies using the npm ci command. Using the ENV command to set the NODE_ENV environment variable keeps the npm ci command from installing any of the project's development dependencies. To keep the base image as lean as possible, the npm cache is cleared with the ```npm cache clean --force``` command.
 
-The ENV command is used to add the node_modules/.bin folder to the path so that commands like nodemon can be executed without having to provide the path to the node_modules/.bin folder.
+*The ENV command is used to add the node_modules/.bin folder to the path so that commands like nodemon can be executed without having to provide the path to the node_modules/.bin folder*.
 
 In the dev image, the ENV command is used to set the NODE_ENV environment variable to development which configures Express to be optimized for a development environment. After using the WORKDIR command to set the working directory to /app, the RUN command is used to install the project's development dependencies by passing the ```--only=development``` flag to the ```npm install``` command. Development dependencies aren't needed in production, so installing them only in the dev image keeps them out of the prod image.
 
@@ -184,7 +187,7 @@ The ports option publishes port 8081 in the container to port 8081 on the host s
 
 Publishing a container port isn't always necessary to do. In this case, you want the React client-side UI application to be able to access the catalog-management microservice API, so publishing a port is necessary to do as the React application will be running in a browser on the host system. Later in this article, you'll see an example of a microservice that's only used internally by another microservice, so publishing a port on the host system isn't necessary to do.
 
-The volumes option is used to define a bind mount and an anonymous volume. When you provide a string, like ./backend/catalog-management:/app, that maps a host file system path to a container path, you're creating a bind mount. When you provide a string, like /app/node_modules, that's just a path on the container, you're creating an anonymous volume.
+*The volumes option is used to define a bind mount and an anonymous volume. When you provide a string, like ./backend/catalog-management:/app, that maps a host file system path to a container path, you're creating a bind mount. When you provide a string, like /app/node_modules, that's just a path on the container, you're creating an anonymous volume.*
 
 Later in this article, you'll see an example of how to create a persistent named volume using the top-level volumes option.
 
