@@ -1,4 +1,4 @@
-Dockerize an Express and Postgres Application
+# Dockerize an Express and Postgres Application
 For this phase, you'll create a docker-compose.yml file for a simple Express and Postgres app. Download the skeleton and you can see the application. Notice how you have a full Express application as well as a db directory with model, migration, and seed files. You can Dockerize this container in at least two ways:
 
 Local development: mount a volume in the container. You would bind mount a host path to the application by setting a volumes key with a value of .:/app in the docker-compose.yml file. This maps a local directory to the container so all the source code (including node_modules) stays on the local file system. As a reminder, you can use the volumes option to both configure a "bind mount" and a "volume". The term "volume" has a very specific meaning in Docker so you should only use it when referring to a named volume.
@@ -23,11 +23,14 @@ Notice how the documentation states which environment variables are required and
 
 Use the DB_USERNAME, DB_PASSWORD, DB_DATABASE values set in the .env.example file.
 
+``` .env
 PORT=8080
 DB_USERNAME=reading_list_app
 DB_PASSWORD=password
 DB_DATABASE=reading_list
 DB_HOST=localhost
+```
+
 You'll also want to set up a volume for the database so your data persists between using the docker compose up command multiple times. Name your volume postgres-db and have it point to where the Postgres image keeps its volumes /var/lib/postgresql/data. Remember that if you have a named volume, you have to name it outside the service key and under a volumes key. Take a look at the Docker Compose 3 documentation for volumes if you need syntax reference.
 
 Next, you'll want to create a custom network you can reference by name to connect your database and Node app. Just like how your volumes key it outside of your services, you create a new key for networks. Name your custom network "pgnodeapp" and use the default bridge driver. It'll look something like this:
@@ -95,7 +98,7 @@ Reminder: you'll need to use the docker-compose up --build command with the --bu
 
 Amazing job! What you just accomplished in this phase is considered to be relatively advanced Docker stuff. Now you are ready to use your Docker container for local development!
 
-Phase 2: Create a Microservice
+# Phase 2: Create a Microservice
 In this phase, you'll create a microservice with Flask and Postgres. Begin by initializing a virtual environment and using Pipenv to install the following dependencies.
 
 flask
@@ -107,8 +110,11 @@ psycopg2-binary
 sqlalchemy
 Now let's create a database and database user. Later, you'll use a Flask-Migrate command to generate tables in the database.
 
+```sql
 CREATE USER ratings_user WITH CREATEDB PASSWORD 'password';
 CREATE DATABASE ratings WITH OWNER ratings_user;
+```
+
 Create an entry book_ratings.py file in the root of the project directory. Then, take a moment to set your FLASK_APP, FLASK_ENV, and DATABASE_URL environment variables.
 
 Create a .flaskenv file for your FLASK_APP environment variable. You'll want to create a .env file and set your private FLASK_ENV and DATABASE_URL variables.
@@ -145,6 +151,7 @@ Otherwise, calculate the book's average_rating and round the average to two deci
 
 Since you are creating an API microservice, you'll want the route to return a JSON response with the book's average_rating and rating_values. Use the jsonify function to return a JSON response. Take a moment to seed some rating information into your database before testing your route.
 
+```sql
 INSERT INTO book_ratings (book_id, value, email)
 VALUES
 (1, 10, 'jane@email.com'),
@@ -153,8 +160,11 @@ VALUES
 (2, 4, 'andrew@email.com'),
 (2, 6, 'julia@email.com'),
 (3, 7, 'erik@email.com');
+```
+
 Now you can visit the endpoint with your browser at http://localhost:5000/ratings/1 or send a GET request with Postman to check if your route is successfully fetching and rendering database ratings! Your JSON response should look something like this:
 
+```json
 {
   "average": 7.67,
   "ratings": [
@@ -169,6 +179,8 @@ Now you can visit the endpoint with your browser at http://localhost:5000/rating
     }
   ]
 }
+```
+
 POST "/ratings/\<int:book_id>"
 Create a route to handle a POST request to create a new book rating. For this route, you'll be using the request.args dictionary to access the route parameters. Take a moment to import request from flask to gain access to the request object.
 
@@ -184,12 +196,14 @@ In the except block, catch the sqlalchemy.exc.IntegrityError and alias it as e. 
 
 Test your route with Postman by sending a POST request to http://localhost:5000/ratings/1?value=8&email=ryan@email.com. Notice the value and email parameters listed in the URL. You should have received a JSON response that looks something like this:
 
+```json
 {
   "book_id": 1,
   "email": "ryan@email.com",
   "id": 7,
   "value": 8
 }
+```
 Now try to send another POST request with the same email: http://localhost:5000/ratings/1?value=1&email=ryan@email.com. You should have received the response 'Each user can only submit one rating per book.'.
 
 Whitelist local host access
@@ -239,7 +253,7 @@ python3 book_ratings.py run -h 0.0.0.0
 Create the Docker-Compose file
 Now that you've finished setting up your microservice's package installation, application setup, and Dockerfile to generate a custom Python image, it's time to create the docker-compose.yml file! Begin by modeling the file based on the compose file you created for the Express application.
 
-docker-compose.yml
+``` docker-compose.yml
 
 version: "3.8"
 services:
@@ -281,6 +295,8 @@ volumes:
 networks:
   pgnodeapp:
     driver: bridge
+```
+
 Let's begin by updating the network name. Rename the pgnodeapp network, since you are no longer creating a network for a Node application.
 
 Next, update the app service to be an api service based on the custom Python image you just created with the Dockerfile. In the api service, name the custom image to be flaskapp instead, and publish port 5000 while listening on port 5000. Update the environment variables to the variables expected by your Flask application.
@@ -293,7 +309,7 @@ Take a moment to build your custom image and start your container by running doc
 
 Take a moment to use Postman and test your dockerized service by sending GET and POST request for book ratings. After you've thoroughly tested the dockerized Flask app, comment in the @app.before_request whitelist function and move forward to the next phase to implement the microservice!
 
-Phase 3: Implement the microservice
+# Phase 3: Implement the microservice
 It's time to implement the microservice you created with Flask into your Express app! Create a book show page that renders a book's details and ratings, using the microservice. Then, implement a form that sends a POST request to the microservice to allow a user to create a book rating.
 
 Think about how you might reference your Flask microservice endpoints, before the microservice is deployed and from within your Dockerized development environment. You'll want to connect the containerized Express application to a service on the host. Take a look at the networking features in Docker. Think of how you might use the special DNS name, host.docker.internal, to send a request from your Express application to your Flask microservice.
